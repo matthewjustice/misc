@@ -5,6 +5,7 @@ print_folder.py - On Windows, print all the files in a folder.
 import sys
 import os
 import ctypes
+import time
 
 def main():
     """Program entry point."""
@@ -18,13 +19,23 @@ def main():
 
     print(f"Folder: {folder}")
 
+    # Get a list of all the files in the folder, excluding directories
+    files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+
+    # Sort the files alphabetically
+    files.sort()
+
     # Print all the files in the folder
-    for file in os.listdir(folder):
+    for file in files:
         file_path = os.path.join(folder, file)
-        if os.path.isfile(file_path):
-            print(file)
-            # Use ShellExecute to print the file
-            ctypes.windll.shell32.ShellExecuteW(None, "print", file_path, None, None, 0)
+        print(f"Printing {file}...")
+
+        # Use ShellExecute to print the file
+        ctypes.windll.shell32.ShellExecuteW(None, "print", file_path, None, None, 0)
+
+        # Delay for a moment to avoid overloading the printer,
+        # and to ensure that files are printed in order
+        time.sleep(5)
 
 # Only execute main when running as the primary module
 if __name__ == '__main__':
